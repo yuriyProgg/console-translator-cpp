@@ -12,6 +12,10 @@ string translate(string lang, string text)
 {
   cpr::Response response = cpr::Get(cpr::Url{API_URL + "/translate"},
                                     cpr::Parameters{{"dl", lang}, {"text", text}});
+
+  if (response.status_code != 200)
+    return "Ошибка при переводе. Вы указали неверный ключ языка.";
+
   // Парсинг JSON-строки
   nlohmann::json jsonData = nlohmann::json::parse(response.text);
   return jsonData["destination-text"];
@@ -65,7 +69,7 @@ int main(int argc, char *argv[])
   if (langValue.empty())
   {
     cout << "Введите ключ языка перевода (для списка возможных ключей языков используйте команду --list)\nКлюч: ";
-    cin >> langValue;
+    getline(cin, langValue);
   }
   cout << "Введите текст для перевода: ";
   getline(cin, text);
